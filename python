@@ -1,0 +1,140 @@
+
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+RAW_PATH = Path('data/raw/customers_raw.csv')
+CLEAN_PATH = Path('data/cleaned/customers_cleaned.csv')
+REPORT_PATH = Path('data/cleaned/data_quality_report.txt')
+
+def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    # Clean column names: lower case, underscores, remove $ symbols
+    df = df.rename(columns=lambda c: c.strip()
+                                    .lower()
+                                    .replace(' ', '_')
+                                    .replace('($)', '')
+                                    .replace('$', ''))
+    return df
+
+def clean_strings(df: pd.DataFrame) -> pd.DataFrame:
+    # Strip whitespace and standardize case for specific text columns
+    for col in ['name', 'email', 'country', 'notes']:
+        if col in df.columns:
+            df[col] = df[col].astype('string')
+            df[col] = df[col].str.strip()
+    # Normalize email & country to lower, name to Title Case
+    if 'email' in df.columns:
+        df['email'] = df['email'].str.lower()
+    if 'country' in df.columns:
+        df['country'] = df['country'].str.lower()
+    if 'name' in df.columns:
+        df['name'] = df['name'].str.lower().str.title()
+    return df
+
+def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
+    # Parse signup_date with multiple formats; coerce invalid to NaT
+    if 'signup_date' in df.columns:
+        df['signup_date'] = pd.to_datetime(
+            df['signup_date'],
+            errors='coerce',
+            dayfirst=False,
+            infer_datetime_format=True
+        )
+    return df
+
+def fix_country(df: pd.DataFrame) -> pd.DataFrame:
+    # Map variations to canonical names (expand as needed)
+    country_map = {
+        'in': 'India', 'india': 'India',
+        'usa': 'United States', 'us': 'United States', 'united states': 'United States',
+        'uk': 'United Kingdom', 'united kingdom': 'United Kingdom'
+    }
+    if 'country' in df.columns:
+        df['country_clean'] = df['country'].map(country_map)
+    return df
+
+def handle_missing_and_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    # Drop full duplicate rows
+    df = df.drop_duplicates()
+
+    # Drop duplicates by email keeping the latest signup_date
+    if {'email', 'signup_date'}.issubset(df.columns):
+        df = df.sort_values('signup_date', ascending=False)
+        df = df.drop_duplicates(subset=['email'], keep='first')
+
+    # Replace empty strings with NaN
+    df = df.replace(r'^\s*$', pd.NA, regex=True)
+
+    # Impute Age: clamp out-of-range and fill missing with median
+    if 'age' in df.columns:
+        df['age'] = pd.to_numeric(df['age'], errors='coerce')
+        df.loc[(df['age'] < 0) | (df['age'] > 120), 'age'] = pd.NA
+        median_age = df['age'].median(skipna=True)
+        df['age'] = df['age'].fillna(median_age)
+
+    # Spent: coerce to numeric, winsorize outliers, fill missing with 0
+    if 'spent' in df.columns:
+        df['spent'] = pd.to_numeric(df['spent'], errors='coerce')
+        p95 = df['spent'].quantile(0.95)
+        df.loc[df['spent'] > p95, 'spent'] = p95
+        df['spent'] = df['spent'].fillna(0)
+
+    return df
+
+def enrich_features(df: pd.DataFrame) -> pd.DataFrame:
+    # Derive year and month from signup_date
+    if 'signup_date' in df.columns:
+        df['signup_year'] = df['signup_date'].dt.year
+        df['signup_month'] = df['signup_date'].dt.month
+    # Flag VIP customers from 'notes'
+    if 'notes' in df.columns:
+        df['is_vip'] = df['notes'].str.lower().str.contains('vip', na=False)
+    return df
+
+def validate(df: pd.DataFrame) -> str:
+    problems = []
+    # Check date parsing success
+    if 'signup_date' in df.columns and df['signup_date'].isna().any():
+        problems.append(f"Unparsed signup_date rows: {int(df['signup_date'].isna().sum())}")
+    # Check emails present and unique
+    if 'email' in df.columns:
+        missing_emails = int(df['email'].isna().sum())
+        problems.append(f"Missing emails: {missing_emails}")
+        duplicates = int(df['email'].duplicated().sum())
+        problems.append(f"Duplicate emails (post-clean): {duplicates}")
+    # Age sanity
+    if 'age' in df.columns:
+        out_of_range = int(((df['age'] < 0) | (df['age'] > 120)).sum())
+        problems.append(f"Age out-of-range count: {out_of_range}")
+    # Country enrichment
+    if 'country_clean' in df.columns:
+        missing_country = int(df['country_clean'].isna().sum())
+        problems.append(f"Unmapped country entries: {missing_country}")
+    return "\n".join(problems)
+
+def main():
+    df = pd.read_csv(RAW_PATH)
+
+    # 1) Standardize columns
+    df = standardize_columns(df)
+    # 2) Clean text fields
+    df = clean_strings(df)
+    # 3) Parse dates
+    df = parse_dates(df)
+    # 4) Normalize country
+    df = fix_country(df)
+    # 5) Handle missing values & duplicates/outliers
+    df = handle_missing_and_duplicates(df)
+    # 6) Feature engineering
+    df = enrich_features(df)
+
+    # Save cleaned data & report
+    CLEAN_PATH.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(CLEAN_PATH, index=False)
+
+    report = validate(df)
+    REPORT_PATH.write_text(report)
+
+    print('Cleaned data saved to', CLEAN_PATH)
+    print('Data quality report saved to', REPORT_PATH)
+
