@@ -1,0 +1,659 @@
+SQL - Structured Query Language 
+
+
+database means collection of data ij format than can be easily access 
+
+a software application used to manage our db is called DBMS ( database management system )
+
+a language need to access the data
+
+relational db stores in form of tables s
+
+is is used to perform crud operation i.e. Create, Read, Update, Delete
+
+
+Normalization in sql
+  
+
+database normalization is a technique of organizing in the database 
+in order to avoid data redundancy , avoid undesirable characteristics and it will be difficult to handle database without normalization it will become inaccurate, slow , insufficient 
+  types of Normalization
+ 1NF , 2NF , 3NF
+
+1) 1NF -  the data  in each column should have an atomic ( single value ) 
+
+ in simple words if one table is there and it is having 3 columns and in the 3rd column data is more than one and we have to apply first normal form to it then the result is going to be like it will create more rows with the same initial name and diffrent rows for diffrent data so it will become readable and easy 
+
+ * without this it will become difficult to handle data 
+
+
+2) 2NF - All the rules of first normal form and it will make the table data to a diffrent table like same data is there with same keyword then it will create diffrent data for it 
+
+
+3) 3NF - All the rules of 2nd normal form and it should not be dependant on primary key 
+
+
+
+------ installation part ---------
+  
+
+ master database is a system database
+
+
+* creating a database  
+there are two methods for creating a database one is directly click on the database name and click on crate - new database - ad new name of the datbase and the click on create then 
+
+2nd method is by executing a query in query editor which is  ( create database ... database name )
+
+after creating a Database following are the Impoertant queries 
+
+* alter a database 
+alter is all about changing in database like adding or removing data tables, changing database name
+
+for ex if we want to change a name of database then there are two methods first manually we can change the name like click right - database - rename and change 
+and 2nd method is by executing a query [ alter database ---------- databasename modify name = ------- next name ] [ query - alter database practice modify name = practice3 ]
+
+* Drop database - dropping a database is directly deleting entire database from sql 
+
+there are two methods to drop a database 
+
+first one directly click - right cick - database - delete 
+2nd methos is executing a query for ex.    [ drop database ----- database name ] -- drop database practice3
+
+
+---------------all about database tables ---------------
+
+* create tables 
+ 
+1) first method to create a table in database is manually creating a datbase  click on the database - expand it - right click on table - new - give name and click ok
+2) 2nd method is by using query 
+create table tableEmployee (
+          EmployeeId int Primary key not null,
+	  EmployeeName varchar(50) not null,
+	  Phone int not null,
+	  DepID int not null
+) 
+
+for ex. this is the query where 
+    create table tableEmployee -- this is query to create table first 
+          EmployeeId     - these                int           -these           Primar key        not null,
+	  EmployeeName   - four                 varchar(50)   -four                              not null,  - these are mentioned in order to make sure data 
+	  Phone          - are                  int           - are                              not null,  - should not be null
+	  DepID          - column               int           - data types                       not null
+                         - names
+
+
+
+* rename tables 
+1) first method to rename a table in database is manually creating a datbase  click on the database - expand it - right click on table - rename - give name and click ok
+2) 2nd method is by using query 
+EXEC sp_rename 'tableEmployee', 'Employee'
+
+
+actual queries with examples 
+
+create database NEWDB3;    ----------- for creating the table
+
+ 
+use NEWDB3;                 ----------- for using the created table
+
+create table employee (     ----------- for adding content in table means creating column names
+ID int ,
+EmpName Varchar(255),
+City varchar(255),
+Salary int
+
+);
+
+
+
+insert into employee(ID, EmpName, City, Salary) ------- for adding data in created table and columns
+values ('1' , 'Raj', 'mumbai', '1000');
+
+Select * from employee;      -------- for selecting the entire table which was cretaed 
+
+select ID, EmpName from employee;  --- for selecting specific columns in table like ID and enpname 
+
+select distinct City from employee;  --- for selecting distinct cities from table
+
+various filters we can apply over here in order to display specific data in the table
+
+select *
+from employee        -- for selecting entire information of employee who is having salary 6000
+where Salary=6000;
+
+
+select *
+from employee 
+where EmpName='Veer'; -- for selecting entire information of employee who is having name veer ( if there is varchar given we need to add'' before to fetch)
+
+
+select *
+from employee 
+where City='Mumbai';
+ 
+
+select EmpName
+from employee 
+where City='Mumbai';      -- for selecting empname only from employee table where city is mumbai
+
+select EmpName,Salary
+from employee 
+where City='Mumbai';       -- for selecting two column data from table like empname and salary who is having city mumbai
+
+select EmpName,Salary,ID                       
+SELECT * 
+from employee
+where Salary>=4000;
+from employee 
+where City='Mumbai';
+
+--------------------------------------------------------------------------------
+
+order by using queries like ascending or descending and can sort by using different parameters too
+
+select * from employee                                                                                
+order by Salary;         
+
+select * from employee
+order by Salary DESC;
+
+select * from employee
+order by Salary ASC;
+
+
+select * from employee
+order by City, Salary;
+
+
+select * from employee
+ where City= 'delhi'
+and Salary=5000;        --- and operator satisfying both the conditions 
+
+
+select * from employee
+ where EmpName='avi' or  ---- or operator
+ EmpName='Ram';
+
+
+SQL IN opearator
+
+select * from employee
+where City IN ('pune','mumbai');
+
+
+select * from employee
+where EmpName IN ('avi','ram');              ---- in operator is used to display entire data using only one data point ex. name , id 
+
+
+select * from employee
+where City not IN ('pune','mumbai');         ------ not in is also used to avoid that particular data points
+
+
+
+
+sql between operator
+
+
+select * from employee
+where Salary Between 3000 and 5000;         ----- between operator used to display data in between a range 
+
+select * from employee
+where Salary not  Between 3000 and 5000;
+
+
+select * from employee                  
+where EmpName Between 'avi' and 'jay'        ---- 
+order by EmpName;
+
+
+SQL like operator 
+
+by using this operator we can easily display data from a  column of a table with specific character as starting or ending
+
+for ex.
+select * from employee               --------- here % is added after P in order to display cities starting with letter P
+where City Like 'P%';
+
+select * from employee
+where city like '%i';                  --------- here % is added before i in order to display cities ending with letter I
+
+
+select * from employee
+where EmpName like '_a%';              --------- here _ and % both are used in order to display a as second character in employees names
+
+select * from employee
+where EmpName not like '_a%';         
+
+
+same thing we can use for city , salary also
+
+select * from employee
+where Salary like '_0%';
+
+
+select * from employee
+where City like '_u%';
+
+select * from employee
+where City like '__m%';          ----  here its displaying cities which are having m as 3rd letter so we can add no. of __ to display desired value
+
+-----------------------------------------------
+
+Max Function in SQL
+
+select MAX(salary)  AS Result    ------- to get maximum value of a column
+from employee;
+
+
+Min Function in SQL
+Select MIN(Salary) AS Result      ------- to get minimun value of a column 
+from employee;
+
+
+Sum Function in SQL
+
+select SUM(Salary) AS result  ---- to get sum of salary of all employees
+from employee;
+
+select SUM(Salary) 
+from employee
+where salary >=5000;                  ---- to get salaries of employees who are having salary more than 5000
+
+
+select SUM(Salary) 
+from employee
+where salary between 1000 and 5000;
+
+Avg Function in SQL 
+
+
+AVG function
+
+select * from employee;
+
+select AVG(Salary)
+from employee
+
+select AVG(Salary)
+from employee
+where Salary > 4000;
+
+select AVG(Salary) AS Conclusion
+from employee
+where Salary <=5000;
+
+
+Count Function 
+select COUNT(Empname)
+from employee                       ---------- this will display no of employees who are having salaries more than 5000
+where Salary > 5000;
+
+select COUNT(Empname)
+from employee
+where Salary between 2000 and 5000;     ----- between condition for the same
+
+select Count(*)
+from employee;                         ------ to display all records count
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+SQL constraints 
+
+1) Not null Constraints
+
+
+create table Students (
+ID int NOT NULL,
+EmpName varchar(255) NOT NULL,
+City varchar(255) NOT NULL,
+Salary int
+)                                                    ---- basically value should not be null in the entire data record 
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('1', 'Om', 'Indore', '1000');
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('2', 'Jay', 'Bareli', '2000');
+
+Select * from Students;
+
+2) Unique Constraints ( Unique Key )
+ 
+basically it ensures that all the values in a column should be difrent for. ex roll no of students
+
+create table Students (
+ID int NOT NULL UNIQUE,      --------- here we have provided the Unique key 
+EmpName varchar(255) NOT NULL,
+City varchar(255) NOT NULL,
+Salary int
+)
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('1', 'Om', 'Indore', '1000');
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('2', 'Jay', 'Bareli', '2000');
+
+Select * from Students;
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('3', 'Om', 'Pune', '3000');
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('4', 'Jay', 'Delhi', '4000');
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('4', 'Ram', 'NsS', '5000');            all of the above records will insert but this will display an error as we have declared 4 as Id earlier also
+
+
+3) Check constarints 
+ basically it ensures that all values in column should satisfy certain conditions
+
+create table Students2 (
+ID int NOT NULL UNIQUE,      --------- here we have provided the Unique key 
+EmpName varchar(255) NOT NULL,
+City varchar(255) NOT NULL,
+Salary int check (salary <= 10000), --- here have provided the check constain
+)
+
+ select * from Students2
+
+ insert into Students2( ID, EmpName, City, Salary)
+Values ('1', 'Om', 'Indore', '1000');
+
+insert into Students2( ID, EmpName, City, Salary)
+Values ('2', 'Jay', 'Bareli', '2000');
+
+insert into Students2( ID, EmpName, City, Salary)
+Values ('3', 'Om', 'Pune', '3000');
+
+
+insert into Students2( ID, EmpName, City, Salary)
+Values ('4', 'Om', 'Pune', '13000');
+
+
+3) Primary Key -- it should be unique and not null
+
+create table Students (
+ID int NOT NULL Primary key,     --- ID is primary key
+EmpName varchar(255) NOT NULL,
+City varchar(255) NOT NULL,
+Salary int
+)
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('1', 'Om', 'Indore', '1000');
+
+
+4) Foreign Table 
+
+it is basically filed  in one table reffering to the primary key in another table.
+
+it is the key used to link two tables together 
+
+child table : The table with the foreign key
+Parent Table : the table with the primary key
+
+
+5) Check Constraints
+
+basically check wala is used to set a limit to values being inserted for ex.
+
+create table Students (
+ID int NOT NULL Primary key,      -----
+EmpName varchar(255) NOT NULL,
+City varchar(255) NOT NULL,
+Salary int Check (Salary<10000)      ----- here check constarints is inserted as salary should be more than 10000 ,if the value will be lesser than it error
+);
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('1', 'Om', 'Indore', '9000');
+
+insert into Students( ID, EmpName, City, Salary)
+Values ('2', 'Jay', 'Bareli', '8000');
+
+if we try to insert a record with salary more than 10000 will show a error 
+
+
+6
+-------------------------------------------------------------------------------------------
+
+ASC COMAAND  & DESE
+
+select * from employee    ------ Ascending order by count
+ORDER By Salary ASC;
+
+
+select * from employee
+ORDER By EmpName ASC;
+
+select * from employee    ------- descending order by alphabet
+ORDER By EmpName Desc;
+
+
+select * from employee
+ORDER By Salary Desc;
+
+---------Alter command in sql-------------
+
+
+alter table employee               ---- for altering a db and adding a new age column in it 
+Add age int;
+
+
+alter table employee
+Add Wifename Varchar;               ----- for deleting the created column
+
+alter table employee
+drop column age;                    ------ for same 
+
+alter table employee
+drop column  Wifename;
+
+
+--------------Update statement in Sql-----------------------------
+
+Update employee
+SET Salary = '2000'
+where id=2;
+
+
+Update employee
+SET 
+Empname = 'Sita',
+Salary = '2000',
+City = 'Delhi'
+where id=2;
+
+
+
+--------------Aliases-------------------------------
+
+select * from employee;
+
+select Empname             -------- to display the result 
+from employee;
+
+select Empname AS Myresult
+from employee;
+
+
+*)------------------------------Stored procedure--------------------important topic
+
+when we use a query again and again then we use stored procedure
+
+
+for ex. 
+
+use NEWDB3;
+
+
+select * from employee;
+
+
+create procedure AllRecords 
+AS
+Select * from employee
+Go;                               ----- simple stored procedure where we have created procedure to select entire table 
+
+exec AllRecords;
+
+
+
+create procedure AllRecords2 @City varchar(20)
+AS
+Select * from employee             ------ here we have added some new elements like city 
+where City= @City;
+
+exec AllRecords2 @City = 'Pune'
+
+
+create procedure AllRecords4 @City varchar(255), @EmpName varchar(255)
+AS
+Select * from employee 
+where City = @City
+AND
+EmpName = @EmpName;                    ------ here we have more than one elements to showcase using sp
+
+
+
+
+---------------------------------Create index statement----------------------------------------
+
+
+use NEWDB3;
+
+
+exec AllRecords;
+
+Create Index Myindex
+on employee (EmpName);
+
+Create Index Myindex2
+on employee (EmpName, Salary);
+
+Drop Index Employee.Myindex2;
+
+exec AllRecords4 @City = 'Pune', @EmpName = 'Om'
+
+
+
+--------------------------------------------------------------------------------------
+
+use Newdb3;
+
+select * into Empbackup2025
+from employee;
+
+select * from Empbackup2025
+
+select Empname, Salary into Mybackup
+from employee;
+
+select * from Mybackup;
+
+select Empname From employee;
+
+----------------------------------------------------------------------------------------
+
+
+
+use NEWDB3;
+
+
+select * from employee;
+
+Select top 2 * from employee;
+
+Select Top 50 percent * from employee;
+
+select top 4 * from employee;
+
+
+Select Top 2  * from employee
+where Salary > 5000;
+
+--------------how to backup a database ----------------------
+
+
+
+backup database NEWDB3
+to disk='C:\backup\mybackup.bak';
+
+
+SQL views--------------------------------
+
+you can present in more readable form by using views in the sql
+
+
+use NEWDB3;
+
+select * from employee;
+
+create view [Employees Raj] AS
+select Empname, City
+from employee
+where City = 'Pune';
+
+select * from [Employees Raj];
+
+create view [Salary Above 5000] AS
+select Empname, City, Salary
+from employee
+where Salary > 5000;
+
+select * from [Salary Above 5000]
+
+drop view [Employees Raj]
+-----------------------------------
+
+
+-------------------Subqueries-------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----delete, drop, trunket ----------------------------
+
+
+1) delete -
+           Delete will delete all or specific row from the table 
+
+
+for ex. 
+       
+delete from employee
+where ID in (2,2);  -- it will delete Ids no. 2 and 2 we can delete multiple rows also
+
+
+2) Truncate - 
+             it will delete all records from the table but table structure will remain same 
+
+for ex.  
+
+         
+
+

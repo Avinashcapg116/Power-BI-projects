@@ -1,0 +1,1 @@
+SELECT 'Avinash' , 'Anil' , 'Pathak'

@@ -1,0 +1,311 @@
+SQL - Structured Query Language 
+
+
+database means collection of data ij format than can be easily access 
+
+a software application used to manage our db is called DBMS ( database management system )
+
+a language need to access the data
+
+relational db stores in form of tables s
+
+is is used to perform crud operation i.e. Create, Read, Update, Delete
+
+
+Normalization in sql
+  
+
+database normalization is a technique of organizing in the database 
+in order to avoid data redundancy , avoid undesirable characteristics and it will be difficult to handle database without normalization it will become inaccurate, slow , insufficient 
+  types of Normalization
+ 1NF , 2NF , 3NF
+
+1) 1NF -  the data  in each column should have an atomic ( single value ) 
+
+ in simple words if one table is there and it is having 3 columns and in the 3rd column data is more than one and we have to apply first normal form to it then the result is going to be like it will create more rows with the same initial name and diffrent rows for diffrent data so it will become readable and easy 
+
+ * without this it will become difficult to handle data 
+
+
+2) 2NF - All the rules of first normal form and it will make the table data to a diffrent table like same data is there with same keyword then it will create diffrent data for it 
+
+
+3) 3NF - All the rules of 2nd normal form and it should not be dependant on primary key 
+
+
+
+------ installation part ---------
+  
+
+ master database is a system database
+
+
+* creating a database  
+there are two methods for creating a database one is directly click on the database name and click on crate - new database - ad new name of the datbase and the click on create then 
+
+2nd method is by executing a query in query editor which is  ( create database ... database name )
+
+after creating a Datbase following are the Impoertant queries 
+
+* alter a database 
+alter is all about changing in database like adding or removing data tables, changing database name
+
+for ex if we want to change a name of database then there are two methods first manually we can change the name like click right - database - rename and change 
+and 2nd method is by executing a query [ alter database ---------- databasename modify name = ------- next name ] [ query - alter database practice modify name = practice3 ]
+
+* Drop database - dropping a database is directly deleting entire database from sql 
+
+there are two methods to drop a database 
+
+first one directly click - right cick - database - delete 
+2nd methos is executing a query for ex.    [ drop database ----- database name ] -- drop database practice3
+
+
+---------------all about database tables ---------------
+
+* create tables 
+ 
+1) first method to create a table in database is manually creating a datbase  click on the database - expand it - right click on table - new - give name and click ok
+2) 2nd method is by using query 
+create table tableEmployee (
+          EmployeeId int Primary key not null,
+	  EmployeeName varchar(50) not null,
+	  Phone int not null,
+	  DepID int not null
+) 
+
+for ex. this is the query where 
+    create table tableEmployee -- this is query to create table first 
+          EmployeeId     - these                int           -these           Primar key        not null,
+	  EmployeeName   - four                 varchar(50)   -four                              not null,  - these are mentioned in order to make sure data 
+	  Phone          - are                  int           - are                              not null,  - should not be null
+	  DepID          - column               int           - data types                       not null
+                         - names
+
+
+
+* rename tables 
+1) first method to rename a table in database is manually creating a datbase  click on the database - expand it - right click on table - rename - give name and click ok
+2) 2nd method is by using query 
+EXEC sp_rename 'tableEmployee', 'Employee'
+
+
+actual queries with examples 
+
+create database NEWDB3;    ----------- for creating the table
+
+ 
+use NEWDB3;                 ----------- for using the created table
+
+create table employee (     ----------- for adding content in table means creating column names
+ID int ,
+EmpName Varchar(255),
+City varchar(255),
+Salary int
+
+);
+
+
+
+insert into employee(ID, EmpName, City, Salary) ------- for adding data in created table and columns
+values ('1' , 'Raj', 'mumbai', '1000');
+
+Select * from employee;      -------- for selecting the entire table which was cretaed 
+
+select ID, EmpName from employee;  --- for selecting specific columns in table like ID and enpname 
+
+select distinct City from employee;  --- for selecting distinct cities from table
+
+various filters we can apply over here in order to display specific data in the table
+
+select *
+from employee        -- for selecting entire information of employee who is having salary 6000
+where Salary=6000;
+
+
+select *
+from employee 
+where EmpName='Veer'; -- for selecting entire information of employee who is having name veer ( if there is varchar given we need to add'' before to fetch)
+
+
+select *
+from employee 
+where City='Mumbai';
+ 
+
+select EmpName
+from employee 
+where City='Mumbai';      -- for selecting empname only from employee table where city is mumbai
+
+select EmpName,Salary
+from employee 
+where City='Mumbai';       -- for selecting two column data from table like empname and salary who is having city mumbai
+
+select EmpName,Salary,ID                       
+SELECT * 
+from employee
+where Salary>=4000;
+from employee 
+where City='Mumbai';
+
+--------------------------------------------------------------------------------
+
+order by using queries like ascending or descending and can sort by using different parameters too
+
+select * from employee                                                                                
+order by Salary;         
+
+select * from employee
+order by Salary DESC;
+
+select * from employee
+order by City, Salary;
+
+
+select * from employee
+ where City= 'delhi'
+and Salary=5000;        --- and operator satisfying both the conditions 
+
+
+select * from employee
+ where EmpName='avi' or  ---- or operator
+ EmpName='Ram';
+
+
+SQL IN opearator
+
+select * from employee
+where City IN ('pune','mumbai');
+
+
+select * from employee
+where EmpName IN ('avi','ram');              ---- in operator is used to display entire data using only one data point ex. name , id 
+
+
+select * from employee
+where City not IN ('pune','mumbai');         ------ not in is also used to avoid that particular data points
+
+
+
+
+sql between operator
+
+
+select * from employee
+where Salary Between 3000 and 5000;         ----- between operator used to display data in between a range 
+
+select * from employee
+where Salary not  Between 3000 and 5000;
+
+
+select * from employee                  
+where EmpName Between 'avi' and 'jay'        ---- 
+order by EmpName;
+
+
+SQL like operator 
+
+by using this operator we can easily display data from a  column of a table with specific character as starting or ending
+
+for ex.
+select * from employee               --------- here % is added after P in order to display cities starting with letter P
+where City Like 'P%';
+
+select * from employee
+where city like '%i';                  --------- here % is added before i in order to display cities ending with letter I
+
+
+
+
+
+Max and Min Function ------------------------------------
+
+use NEWDB3;
+
+select * from  employee;
+
+select MAX(salary)  AS Result
+from employee;                         ------ max function is used to indicate max value of a particular column 
+
+Select MIN(Salary) AS Resuli
+from employee;                          ------min function is used to indicate min value of a particular column 
+
+                                            
+use NEWDB3;
+
+select * from employee;
+
+select SUM(Salary) AS result
+from employee;                         -------- Sum function is used to add all the values in a column 
+
+select SUM(Salary) 
+from employee
+where salary >=5000;
+
+select SUM(Salary) 
+from employee                         ------- here we are adding all the values from the salary column but there is a condition using between as salary                      should be between 1000 and 5000
+where salary between 1000 and 5000;
+
+AVG function
+
+select * from employee;
+
+select AVG(Salary)
+from employee
+
+select AVG(Salary)
+from employee
+where Salary > 4000;
+
+select AVG(Salary) AS Conclusion
+from employee
+where Salary <=5000;
+
+use NEWDB3;
+
+select * from employee;
+
+select COUNT(Empname)
+from employee
+where Salary between 2000 and 5000;
+
+select Count(*)
+from employee;
+
+
+---------------------------------------------------------------------------------------
+
+logical operators in sql 
+
+1) AND operator
+
+
+select * from person.Person------ basic select statement   
+where FirstName = 'Dylan' 
+AND                        ----- here and operator is present
+LastName = 'Miller';
+
+and it will indicate result as per the consent 
+
+
+2) OR operator
+
+
+select * from person.Person
+where FirstName = 'Dylan' and LastName = 'Miller';    --- in this operartor any of the condition get true then it will show the result 
+
+
+3) between operator
+
+select * from person.Person
+where BusinessEntityID between 1 and 5   --- it will show the result between these IDs
+
+4) IN operator
+
+select * from person.Person
+where BusinessEntityID IN (1,2,4,5)
+
+any of the ID presents there then it will show the result
+
+
+5) 

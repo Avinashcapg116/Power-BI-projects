@@ -1,0 +1,393 @@
+SQL Joins
+
+
+join means basically combining together 
+
+
+a  join clause is used to combine data from two or more tables, based on a related column between them
+
+Types of join
+1 Inner joins 2) Left joins 3) Right Joins 4) Full joins
+
+
+1) inner joins
+
+when we want to join two columns from different tables 
+
+
+for ex.
+
+
+-------------------------------1st Table creation----------------------------------
+
+use Studentdata;
+
+
+Create Table customer(
+ID int,
+Firstname varchar(255),
+Lastname varchar(255),
+address int) ;
+
+select * from customer;
+
+Insert into customer (ID, Firstname, lastname, address)
+ values ('1', 'Avinash', 'Pathak', '11')
+;
+
+Insert into customer (ID, Firstname, lastname, address)
+ values ('2', 'Raj', 'Kumar', '12')
+;
+
+
+Insert into customer (ID, Firstname, lastname, address)
+ values ('3', 'Rushi', 'Dhawan', '13')
+;
+
+Insert into customer (ID, Firstname, lastname, address)
+ values ('4', 'Pavan', 'Singh', '14')
+;
+
+---------------------------------------2nd table creation-------------------------------
+
+
+Create Table payment(
+ID int,
+Amount int,
+Mode varchar(255),
+PaymentDate Date) ;
+
+
+Insert into payment (ID, Amount, Mode, Paymentdate)
+ values ('1', '200', 'Cash', '12-12-2024')
+;
+
+select * from payment;
+
+
+Insert into payment (ID, Amount, Mode, Paymentdate)
+ values ('2', '300', 'Card', '12-12-2024')
+;
+
+
+Insert into payment (ID, Amount, Mode, Paymentdate)
+ values ('3', '400', 'Cash', '12-12-2024')
+;
+
+
+Insert into payment (ID, Amount, Mode, Paymentdate)
+ values ('5', '500', 'Card', '12-12-2024')
+;
+
+delete from payment
+where id = '2';
+
+
+-------------------inner joins execution-------------------------
+
+Select *                      
+from customer AS c               ---- customer c as alias 
+Inner join payment as p          ---- Inner join payment as p alias
+ON c.ID = p.ID                   ---- ON and both column names which are common 
+
+Select c.Firstname, p.amount, p.mode 
+from customer AS c
+Inner join payment as p
+ON c.ID = p.ID
+
+
+
+2) Left Join
+
+in this join all values of left table will display and matching values from right table
+
+
+Select * 
+from customer As c
+Left Join Payment As p
+On  c.ID = p.ID
+
+
+result will be it will display all the records from left table i.e. table customer  c and matching records of payment p and remaining records of payment id will display null
+
+for ex. id 1 2 3 will display with all the data of both the columns but id 4 will display for payment column
+
+
+3) Right Join
+
+
+Select * 
+from customer As c
+Right Join Payment As p
+On  c.ID = p.ID
+
+
+same as left join but it will display right column values 
+
+
+
+4) Full Outer Join
+
+
+returns all records when there is a match in either left or right table
+
+
+
+Select * 
+from customer AS c
+Full Outer join payment as p
+ON c.ID = p.ID
+
+
+It will be display all the id and of both the columns with whatever data null or not still it will display in it
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+Window Function In SQL
+
+Analytics function
+
+select DeptName, max (salary) as maxsalary
+from employee
+group by DeptName; 
+
+
+here we can display the max from each department using this query but in such case if we want to display all records of the same then we will use the windows function
+
+select e.*,
+max (salary) over () as maxsalary    ---- here over is the window function created 
+from employee e;
+
+select e.*,
+max (salary) over (partition by deptname) as maxsalary --- partition by each department and alias maxsalary will display max salary of each dept
+from employee e;
+
+------------------------------row number function
+select e.*,
+row_number () over (Order By e.Salary) as rn   -- in row number function it is not possible as max we have to mention order by to execute the query
+from employee e;
+
+
+SELECT e.*,
+       ROW_NUMBER() OVER (PARTITION BY deptname ORDER BY e.ID) AS rn
+FROM employee e;
+
+
+=-------------------------------------------------------
+
+
+select distinct PersonType, FirstName
+from person.person;                         ---- will display only 2 cloumns named respectively
+
+
+
+
+
+use AdventureWorks2022
+
+
+select * from person.person;
+
+select distinct PersonType, FirstName
+from person.person;
+
+select top 20 * from person.person;
+
+select firstname, middlename, lastname from person.person order by firstname ASC
+
+
+select firstname, middlename, lastname from person.person order by firstname DESC
+
+group clause----
+select shelf,  sum(Quantity) as quantity, sum(bin) as bin
+from production.ProductInventory
+group by Shelf order by Shelf;
+
+
+--------having clause---
+select shelf,  sum(Quantity) as quantity, sum(bin) as bin
+from production.ProductInventory
+where sum(Quantity) >1000
+group by Shelf 
+--having Shelf = 'A' Order by Shelf--
+
+
+
+
+Wild card operations
+
+are used to search for data within a table
+ 
+like operator
+
+
+
+* Conversion function
+
+Convert(Datatype(Length),Expression,Style)
+
+
+pdata tyoe is required to convert as 
+length is optional
+Expression is required as it is the value which needs to convert another data type
+Style  is also optional it is the format used to convert between data types, such as a date or string format
+
+
+Cast(Expression AS DataType(Length))
+
+here expression is required as it is the value which needs to convert to another data type
+datatype is required 
+length is optional
+
+
+------conversion function----
+
+
+!1) Convert 2) Cast 
+
+use AdventureWorks2022
+
+----Convert
+Select Convert(int,5.45)
+Select Convert(float,5.45)
+select Convert(varchar,5.45)
+Select Convert(datetime, '2025-9-5')
+select firstname, LastName, modifieddate,
+     Convert(Varchar, Modifieddate) DateToText
+from person.person
+
+
+
+----Cast 
+Select Cast (5.45 As int)
+Select Cast (5.45 As float)
+Select Cast(5.45 As Varchar)
+Select Cast('2025-9-5' As datetime) as texttodatewithdata
+select firstname, LastName, modifieddate,
+     Cast(Modifieddate as varchar) DateToText
+from person.person 
+
+
+
+
+
+
+------------------------SET operators-------------------------------
+
+1) Union 2) Union all 3) Intersect 4) Except 
+
+the result sets of all queries must have the same number of columns
+in  every result set the data type of each column must match the data type of its  corresponding column in final result set
+
+1) Union - it combines two or more result sets in a single set without duplicates
+
+use AdventureWorks2022
+
+
+
+-- Union operator --
+select CurrencyCode --109 rows
+from Sales.CountryRegionCurrency
+Union
+select CurrencyCode -- 105 rows
+from Sales.Currency
+
+this combines two select statements but displays only distinct values 
+
+--Union all operator ---
+select CurrencyCode --109 rows
+from Sales.CountryRegionCurrency
+Union all 
+select CurrencyCode -- 105 rows
+from Sales.Currency
+ this combines two select staments but displays all the values present over there
+
+
+3) Intersect operator 
+-----------Intersect Operator -----------
+
+ Select * from HumanResources.Employee
+
+
+ --all job titles for position held by both males and females
+ Select JobTitle from HumanResources.Employee
+ where Gender = 'M'     --- Job titles for males (206 Rows)
+Intersect
+ Select JobTitle from HumanResources.Employee
+ where Gender = 'F'     --- Job titles for Females (84 Rows)
+
+only 26 job titles that are held by both male and females 
+
+
+---with inner join----
+
+Select Distinct EM.Jobtitle 
+from HumanResources.Employee as EM
+Join HumanResources.Employee as EF
+on EM.JobTitle = EF.JobTitle
+  And EM.Gender = 'M'
+  And EF.Gender = 'F'
+
+
+
+-----------------Datetime function-----------------
+
+
+Get date function
+Select Getdate()
+
+Isdate Function()
+Select Getdate()
+
+Select ISdate(Getdate()
+
+
+Checks an expression and returns 1 if it is a valid date
+
+Select ISdate(2025-09-24);
+
+Dayfucntion
+returns the day of a the month for a specified date
+Monthfucntion
+returns the month for a specified date
+Same for year function
+
+Select Day('2025-05-09')
+Select Month('2025-05-09')
+Select Year('2025-05-09')
+
+datapart function---
+
+used to specify one specific parameter for ex. year, it will retrieve year from the given query 
+Select DATEPART(year, '2025-02-09 5:24:22')
+Select DATEPART(Day, '2025-02-09 5:24:22')
+Select DATEPART(MONTH, '2025-02-09 5:24:22')
+Select DATEPART(HOUR, '2025-02-09 5:24:22')
+Select DATEPART(minute, '2025-02-09 5:24:22')
+
+--Datetime function--
+Select DATEPART(minute, '2025-02-09 5:24:22') --- return integer
+
+--but in datetime function--
+Select Datename(minute, '2025-02-09 5:24:22')
+Select Datename(WEEKDAY, '2025-02-09 5:24:22') -- will return varchar / string
+Select Datename(DAYOFYEAR, '2025-02-09 5:24:22') 
+Select Datename(QUARTER, '2025-02-09 5:24:22') 
+
+
+---Dateadd function---
+
+it adds a time/date interval to a date and then returns the date
+
+
+
+
+
+-----------------------------------------------------------------------------------------
+
+------string function----
+
+
